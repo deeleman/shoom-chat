@@ -1,28 +1,44 @@
-import { Server, type ServerOptions } from "socket.io";
+import { Server, type ServerOptions, type Socket } from "socket.io";
 import { UserService } from "./UserService.js";
-import { IncomingMessage, ServerResponse } from "node:http";
 
 export class SocketService {
   private constructor(
-    private readonly server: Partial<ServerOptions>,
+    private readonly httpServer: Partial<ServerOptions>,
     private readonly userService: UserService,
   ) {
-    const io = new Server(server);
+    const io = new Server(httpServer, {
+      cors: {
+        origin: process.env.NODE_ENV === 'production' ? false : ['http://localhost:5173'], // Allow Vite dev server to connect
+        methods: ["GET", "POST"]
+      }
+    });
 
-    io.on('connection', (socket) => {
-      console.log(`User ${socket.id} has connected successfully`);
+    // Socket.IO connection handling
+    io.on('connection', (socket: Socket) => {
+      console.log(`User connected: ${socket.id}`);
 
-      this.userService.registerUser(socket.id);
-      io.emit('peers', userService.getPeersByChannel());
+      userService.registerUser(socket.id);
 
-      io.on('disconnection', () => {
-        userService.unRegisterUser(socket.id);
+      // Send a welcome message to the newly connected client
+      socket.emit('message', `Welcome, you are connected with ID: ${socket.id}`);
+
+      // Listen for a 'chatMessage' event from the client
+      socket.on('peers', () => {
+        console.log(`Received peers request message from ${socket.id}`);
+        // Broadcast the message to all connected clients
+        io.emit('peers', userService.getPeersByChannel());
+      });
+
+      // Handle client disconnection
+      socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.id}`);
+        io.emit('message', `User ${socket.id} has left the chat.`);
       });
     });
   }
 
   static initialize(
-    server: Partial<ServerOptions>,
+    server: any,
     userService: UserService,
     next: () => void,
   ): SocketService {

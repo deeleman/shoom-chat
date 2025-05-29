@@ -1,31 +1,59 @@
 import "./App.css";
-import { io } from "socket.io-client";
-import { useEffect, useRef, useState } from "react";
+import { io, Socket } from 'socket.io-client';
+import { useCallback, useEffect, useState } from "react";
+
+const SOCKET_SERVER = `http://localhost:3000`;
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [socketOutput, setSocketOutput] = useState('');
-  const socketRef = useRef(io());
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
-    socketRef.current.on('peers', (socketId, peers) => {
+    const socketIO = io(
+      process.env.NODE_ENV === 'production' 
+        ? window.location.origin 
+        : SOCKET_SERVER
+    );
+
+    setSocket(socketIO);
+    
+    socketIO.on('connect', () => {
+      console.log('Connected to Socket.IO server!');
+      setMessages((prevMessages) => [...prevMessages, 'Connected to server!']);
+    });
+
+    socketIO.on('peers', (socketId, peers) => {
       console.log({socketId, peers})
-      setSocketOutput(JSON.stringify({socketId, peers}, null, 2));
+      setMessages((prevMessages) => [...prevMessages, JSON.stringify({socketId, peers}, null, 2)]);
+    });
+
+    socketIO.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server.');
+      setMessages((prevMessages) => [...prevMessages, 'Disconnected from server.']);
     });
 
     return () => {
-      socketRef.current.removeAllListeners();
+      socketIO.removeAllListeners();
+      socketIO.disconnect();
     };
   }, []);
+
+  const buttonClickHandler = useCallback(() => {
+    if (socket) {
+      socket.emit('peers');
+    }
+  }, [socket]);
 
   return (
     <div className="App">
       <h1>Soom Chat</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          Test counter: {count}
+        <button onClick={buttonClickHandler}>
+          Call peers
         </button>
-        {socketOutput && <p><pre>{socketOutput}</pre></p>}
+        {messages.map((message) => (
+          <p><pre>{message}</pre></p>
+        ))}
       </div>
     </div>
   );

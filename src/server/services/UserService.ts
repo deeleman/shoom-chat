@@ -66,4 +66,12 @@ export class UserService {
   getUserChannel(user: User): Channel | undefined {
     return this.userChannelMap.get(user);
   }
+
+  /**
+   * Helper function to return all channels created.
+   * @returns A {@link Channel} objects array.
+   */
+  getChannels(): Channel[] {
+    return Object.keys(this.userChannels);
+  }
 }

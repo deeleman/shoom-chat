@@ -1,14 +1,19 @@
 {
   "name": "soomchat",
-  "description": "A Zoom clone application built on top of React, Express, WebRTC and Web Sockets for personal and family use.",
+  "description": "A Zoom clone application built on top of React, Express, WebRTC and Web Sockets for personal use.",
   "author": "Pablo Deeleman",
   "private": true,
   "version": "0.0.0",
+  "main": "dist/server/server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -w src/server -x tsx src/server/main.ts",
-    "start": "NODE_ENV=production yarn tsx src/server/main.ts",
-    "build": "yarn vite build"
+    "dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
+    "dev:server": "nodemon -w src/server/server -x tsx src/server/server.ts",
+    "dev:client": "vite",
+    "build": "yarn build:client && yarn build:server",
+    "build:server": "tsc --project src/server/tsconfig.json",
+    "build:client": "vite build",
+    "start": "NODE_ENV=production node dist/server/server.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",
@@ -17,16 +22,18 @@
     "react-dom": "^19.1.0",
     "socket.io": "4.8.1",
     "socket.io-client": "4.8.1",
-    "tsx": "^4.19.3",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "vite": "^6.3.3",
-    "vite-express": "*"
+    "vite": "^6.3.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/socket.io": "^3.0.2",
+    "@types/socket.io-client": "^3.0.0",
+    "concurrently": "^8.2.2",
     "nodemon": "^3.1.10"
   }
 }
