@@ -37,15 +37,16 @@ export class SocketService {
     });
   }
 
-  static initialize(
-    server: any,
+  static initialize(config: {
+    httpServer: any,
     userService: UserService,
-    next: () => void,
-  ): SocketService {
-    const socketService = new SocketService(server, userService);
+    onReady: () => void,
+  }): SocketService {
+    const { httpServer, userService, onReady } = config;
+    const socketService = new SocketService(httpServer, userService);
 
-    if (typeof next === 'function') {
-      next();
+    if (typeof onReady === 'function') {
+      onReady();
     }
 
     return socketService;

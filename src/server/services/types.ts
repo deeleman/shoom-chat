@@ -1,5 +1,5 @@
 /**
- * Represents a specific Channel within the SoomChat channels pool.
+ * Represents a specific Channel within the ShoomChat channels pool.
  */
 export type Channel = string;
 

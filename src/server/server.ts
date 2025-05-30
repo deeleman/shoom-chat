@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Expose a Health API endpoint for the CI pipeline
 app.get("/hello", (_: Request, res: Response) => {
-  res.send("Hello Soom Chat!");
+  res.send("Hello Shoom Chat!");
 });
 
 // Fallback catch-all route that serves React app's index.html

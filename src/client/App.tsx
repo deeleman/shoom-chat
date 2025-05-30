@@ -46,7 +46,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Soom Chat</h1>
+      <h1>Shoom Chat</h1>
       <div className="card">
         <button onClick={buttonClickHandler}>
           Call peers
