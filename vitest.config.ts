@@ -7,7 +7,7 @@ export default defineConfig({
       {
         test: {
           globals: true,
-          name: 'jest-dom',
+          name: 'client',
           root: './src/client',
           environment: 'jest-dom',
           setupFiles: ['./vitest.setup.ts'],
@@ -16,7 +16,7 @@ export default defineConfig({
       {
         test: {
           globals: true,
-          name: 'node',
+          name: 'server',
           root: './src/server',
           environment: 'node',
         },
