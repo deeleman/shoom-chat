@@ -1,6 +1,6 @@
 import { Server, type ServerOptions, type Socket } from "socket.io";
-import { type Room, type User, SocketEventMessage } from "./types";
-import { UserService } from "./UserService";
+import { type Room, type User, SocketEventMessage } from "./types.js";
+import { UserService } from "./UserService.js";
 import { PUBLIC_CHANNEL } from "./constants.js";
 
 export class SocketService {

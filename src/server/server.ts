@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import express from 'express';
 import type { Request, Response } from 'express';
 import { Server } from 'socket.io';
-import { UserService, SocketService } from './services';
+import { UserService, SocketService } from './services/index.js';
 
 // Configure build file path and filename location
 const BUILD_PATH = '../../dist/client';

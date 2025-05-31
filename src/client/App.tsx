@@ -7,6 +7,7 @@ const SOCKET_SERVER = `http://localhost:3000`;
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<string>('');
+  const [socketId, setSocketId] = useState<string | null>(null);
 
   useEffect(() => {
     const socketIO = io(
@@ -19,6 +20,7 @@ function App() {
     
     socketIO.on('welcome-response', (response) => {
       console.log('Connected to Socket.IO server!', response);
+      setSocketId(response.socketId);
       setMessages(JSON.stringify(response, null, 2));
     });
 
@@ -43,10 +45,8 @@ function App() {
       socket.emit(
         'channel-join-request',
         { 
-          user: {
-            socketId: socket.id,
-            room: "Pablo's Fun room"
-      }});
+          user: { socketId, name: 'Pablo Deeleman' },
+        });
     }
   }, [socket]);
 
@@ -58,6 +58,7 @@ function App() {
           Call peers
         </button>
         <div><pre>{messages}</pre></div>
+        <div><pre>Socket ID: {socketId}</pre></div>
       </div>
     </div>
   );

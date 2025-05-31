@@ -1,5 +1,5 @@
-import { PUBLIC_CHANNEL } from "./constants";
-import type { RoomUsers, User, Room } from "./types";
+import { PUBLIC_CHANNEL } from "./constants.js";
+import type { RoomUsers, User, Room } from "./types.js";
 
 /**
  * The UserService class is a centralized stateful
@@ -36,8 +36,6 @@ export class UserService {
     if (room) {
       this.usersByRoom[room] = this.usersByRoom[room].filter((user) => user.socketId !== userSocketId);
       this.userRoomMap.delete(userSocketId);
-    } else {
-      throw new Error('The requested channel or user does not exist');
     }
   }
 

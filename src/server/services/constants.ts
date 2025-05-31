@@ -1,4 +1,4 @@
-import { Room } from "./types";
+import { Room } from "./types.js";
 
 /**
  * Default room channel token.
