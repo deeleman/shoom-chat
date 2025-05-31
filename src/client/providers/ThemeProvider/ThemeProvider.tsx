@@ -18,14 +18,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, defaultT
     theme,
   }), [theme, setTheme]);
 
-  const childrenMemo = useMemo(() => {
-    return children;
-  }, [])
-
   return (
     <PasteTheme.Provider theme={theme}>
       <ThemeContext.Provider value={themeProviderProps}>
-        {childrenMemo}
+        {children}
       </ThemeContext.Provider>
     </PasteTheme.Provider>
   );

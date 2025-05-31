@@ -1,2 +1,2 @@
 export * from './MediaDevicesProvider';
-export * from './ThemeProvider';
+export * from './useMediaDevices';

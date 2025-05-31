@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { useEffect, useState } from "react";
 import { Backdrop, Footer, Header } from './shell';
 import { Flex } from '@twilio-paste/flex';
-import { ThemeProvider } from './providers';
+import { ThemeProvider, MediaDevicesProvider } from './providers';
 
 const SOCKET_SERVER = `http://localhost:3000`;
 
@@ -43,20 +43,22 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider defaultTheme='dark'>
-      <Backdrop>
-        <Flex width={'100%'} height={'100vh'} vertical>
-          <Header />
-          <Flex grow>
-            <div className="card">
-              <div><pre>{messages}</pre></div>
-              <div><pre>Socket ID: {socketId}</pre></div>
-            </div>
+    <MediaDevicesProvider>
+      <ThemeProvider defaultTheme='dark'>
+        <Backdrop>
+          <Flex width={'100%'} height={'100vh'} vertical>
+            <Header />
+            <Flex grow>
+              <div className="card">
+                <div><pre>{messages}</pre></div>
+                <div><pre>Socket ID: {socketId}</pre></div>
+              </div>
+            </Flex>
+            <Footer />
           </Flex>
-          <Footer />
-        </Flex>
-      </Backdrop>
-    </ThemeProvider>
+        </Backdrop>
+      </ThemeProvider>
+    </MediaDevicesProvider>
   );
 }
 

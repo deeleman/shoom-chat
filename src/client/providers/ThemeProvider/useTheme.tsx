@@ -6,7 +6,7 @@ export const useTheme = () => {
 
   if (!context) {
     throw new Error(
-      'The useTheme() component must be executed in a component inside a <ThemeProvider> element.'
+      'The useTheme() hook must be executed in a component inside a <ThemeProvider> element.'
     )
   }
 
