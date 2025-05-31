@@ -1,7 +1,7 @@
 {
-  "name": "soomchat",
-  "description": "A Zoom clone application built on top of React, Express, WebRTC and Web Sockets for personal use.",
+  "name": "shoom",
   "author": "Pablo Deeleman",
+  "description": "A Zoom clone application built on top of React, Express, WebRTC and Web Sockets for personal use.",
   "private": true,
   "version": "0.0.0",
   "main": "dist/server/server.js",
@@ -18,6 +18,8 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@twilio-paste/core": "^21.3.0",
+    "@twilio-paste/icons": "^13.1.0",
     "@vitejs/plugin-react": "^4.5.0",
     "express": "^5.1.0",
     "react": "^19.1.0",
