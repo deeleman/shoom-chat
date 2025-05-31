@@ -9,7 +9,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     <Backdrop>
       <Flex width={'100%'} height={'100vh'} vertical>
         <Header />
-        <Flex grow vAlignContent={'center'} hAlignContent={'center'}>
+        <Flex grow vAlignContent={'center'} hAlignContent={'center'} width={'100%'}>
           {children}
         </Flex>
         <Footer />

@@ -43,7 +43,7 @@ function App() {
     <MediaDevicesProvider>
       <ThemeProvider defaultTheme="dark">
         <Layout>
-          <p>Foo</p>
+          <p>Video is embedded here</p>
         </Layout>
       </ThemeProvider>
     </MediaDevicesProvider>
