@@ -18,8 +18,8 @@ export const ThemeSwitch: React.FC = (): React.ReactElement => {
   return (
     <Switch name="theme" checked={isDarkMode} onChange={toggleTheme}>
       {isDarkMode
-        ? <DarkModeIcon decorative={false} title="Dark mode" />
-        : <LightModeIcon decorative={false} title="Light mode" />
+        ? <LightModeIcon decorative={false} title="Light mode" />
+        : <DarkModeIcon decorative={false} title="Dark mode" />
       }
     </Switch>
   );
