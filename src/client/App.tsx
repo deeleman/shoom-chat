@@ -6,7 +6,7 @@ const SOCKET_SERVER = `http://localhost:3000`;
 
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string>('');
 
   useEffect(() => {
     const socketIO = io(
@@ -17,19 +17,19 @@ function App() {
 
     setSocket(socketIO);
     
-    socketIO.on('connect', () => {
-      console.log('Connected to Socket.IO server!');
-      setMessages((prevMessages) => [...prevMessages, 'Connected to server!']);
+    socketIO.on('welcome-response', (response) => {
+      console.log('Connected to Socket.IO server!', response);
+      setMessages(JSON.stringify(response, null, 2));
     });
 
-    socketIO.on('peers', (socketId, peers) => {
-      console.log({socketId, peers})
-      setMessages((prevMessages) => [...prevMessages, JSON.stringify({socketId, peers}, null, 2)]);
+    socketIO.on('channel-join-response', (response) => {
+      console.log('Channel join response.');
+      setMessages(JSON.stringify(response, null, 2));
     });
-
-    socketIO.on('disconnect', () => {
+    
+    socketIO.on('disconnect', (response) => {
       console.log('Disconnected from Socket.IO server.');
-      setMessages((prevMessages) => [...prevMessages, 'Disconnected from server.']);
+      setMessages(response);
     });
 
     return () => {
@@ -40,7 +40,13 @@ function App() {
 
   const buttonClickHandler = useCallback(() => {
     if (socket) {
-      socket.emit('peers');
+      socket.emit(
+        'channel-join-request',
+        { 
+          user: {
+            socketId: socket.id,
+            room: "Pablo's Fun room"
+      }});
     }
   }, [socket]);
 
@@ -51,9 +57,7 @@ function App() {
         <button onClick={buttonClickHandler}>
           Call peers
         </button>
-        {messages.map((message) => (
-          <p><pre>{message}</pre></p>
-        ))}
+        <div><pre>{messages}</pre></div>
       </div>
     </div>
   );

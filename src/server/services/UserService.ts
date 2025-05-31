@@ -1,77 +1,73 @@
-import type { ChannelUsers, User, Channel } from "./types.js";
+import { PUBLIC_CHANNEL } from "./constants";
+import type { RoomUsers, User, Room } from "./types";
 
 /**
  * The UserService class is a centralized stateful
- * provider for handling users by video channel.
+ * provider for handling users by chat room channel.
  */
 export class UserService {
-  private userChannels: ChannelUsers = {
-    public: [],
+  private usersByRoom: RoomUsers = {
+    [PUBLIC_CHANNEL]: [],
   };
 
-  private userChannelMap = new Map<User, Channel>();
+  private userRoomMap = new Map<string, Room>();
 
   /**
-   * Registers a new user within a specific channel.
-   * @param user {@link User} instance to register in the provided channel.
-   * @param channel Optional {@link Channel} for attaching the {@link User} to. Defaults to `public` if not explicitly provided.
+   * Registers a new user within a specific room channel.
+   * @param user {@link User} instance to register in the provided room channel.
+   * @param room {@link Room} for attaching the {@link User} to. 
    */
-  registerUser(user: User, channel: Channel = 'public'): void {
-    if (channel in this.userChannels) {
-      this.userChannels[channel].push(user);
+  registerUser(user: User, room = PUBLIC_CHANNEL): void {
+    if (room in this.usersByRoom) {
+      this.usersByRoom[room].push(user);
     } else {
-      this.userChannels[channel] = [user];
+      this.usersByRoom[room] = [user];
     }
 
-    this.userChannelMap.set(user, channel);
+    this.userRoomMap.set(user.socketId, room);
   }
 
   /**
-   * Removes the informed {@link User} from a specific channel provided.
-   * @param user {@link User} instance to remove from the provided channel.
-   * @param channel Optional {@link Channel} for removing the {@link User} from. Defaults to `public` if not explicitly provided.
+   * Removes the informed {@link User} by its `socketId` from a specific channel provided.
+   * @param userSocketId String representing the `Socket.socketId` of the finished connection.
    */
-  unRegisterUser(user: User, channel: Channel = 'public'): void {
-    if (channel in this.userChannels) {
-      this.userChannels[channel] = this.getPeersByChannel(user, channel);
-      this.userChannelMap.delete(user);
+  unRegisterUser(userSocketId: string): void {
+    const room = this.userRoomMap.get(userSocketId);
+    if (room) {
+      this.usersByRoom[room] = this.usersByRoom[room].filter((user) => user.socketId !== userSocketId);
+      this.userRoomMap.delete(userSocketId);
     } else {
-      throw new Error('The requested channel does not exist');
+      throw new Error('The requested channel or user does not exist');
     }
   }
 
   /**
-   * Returns all the users existing in a given channel, except for the given user.
-   * @param user Optional {@link User} instance whose peers we want to inspect. If not provided it will return ALL users in the channel.
-   * @param channel Optional {@link Channel} whose {@link User} instances we want to retrieve. Defaults to `public` if not explicitly provided.
-   * @returns An array of user peers to chat with in the channel selected.
+   * Returns all the users existing in a given room channel, except for the given user.
+   * @param room {@link Room} object whose {@link User} instances we want to retrieve.
+   * @returns An array of user peers to chat with in the room channel selected.
    */
-  getPeersByChannel(user?: User, channel: Channel = 'public'): User[] | never {
-    if (user && channel.indexOf(user) < 0) {
-      throw new Error('The user does not belong in this channel');
+  getPeersByChannel(room = PUBLIC_CHANNEL): User[] | never {
+    if (room in this.usersByRoom) {
+      return this.usersByRoom[room];
     }
 
-    if (channel in this.userChannels) {
-      return this.userChannels[channel].filter((peer) => peer !== user);
-    }
-
-    throw new Error('The requested channel does not exist');
+    throw new Error('The requested room channel does not exist');
   }
 
   /**
-   * Retrieves the channel where the user provided is registered at.
-   * @param user The {@link User} object whose channel we want to retrieve.
-   * @returns The {@link Channel} object representing the channel the suer is subscribed to.
+   * Retrieves the room channel where the user provided is registered at.
+   * @param user The {@link User} object whose room channel we want to retrieve.
+   * @returns The {@link Room} object representing the room channel the suer is subscribed to.
    */
-  getUserChannel(user: User): Channel | undefined {
-    return this.userChannelMap.get(user);
+  getUserChannel(user: User): Room | undefined {
+    return this.userRoomMap.get(user.socketId);
   }
 
   /**
-   * Helper function to return all channels created.
-   * @returns A {@link Channel} objects array.
+   * Helper function to return all room channels created.
+   * @returns A {@link Room} objects array.
    */
-  getChannels(): Channel[] {
-    return Object.keys(this.userChannels);
+  getRooms(): Room[] {
+    return Object.keys(this.usersByRoom);
   }
 }

@@ -13,6 +13,6 @@
     "jsx": "preserve",
     "types": ["node"]
   },
-  "include": ["server.ts", "./services"],
+  "include": ["server.ts", "./services", "../shared/types.ts"],
   "exclude": ["../client/main.tsx", "../client/App.tsx", "**/*.css", "../../vite.config.ts"]
 }
