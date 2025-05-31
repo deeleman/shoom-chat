@@ -27,12 +27,12 @@ export const SettingsMenu: React.FC = (): React.ReactElement => {
   const selectVideoSource = useCallback((device: MediaDeviceInfo) => {
     mediaDevicesSettings.selectVideoDevice(device);
     videoOptionsMenu.hide();
-  }, [mediaDevicesSettings]);
+  }, [mediaDevicesSettings, videoOptionsMenu]);
 
   const selectMicrophone= useCallback((device: MediaDeviceInfo) => {
     mediaDevicesSettings.selectMicrophoneDevice(device);
     micOptionsMenu.hide();
-  }, [mediaDevicesSettings]);
+  }, [mediaDevicesSettings, micOptionsMenu]);
 
   return (
     <ButtonGroup attached>

@@ -9,7 +9,7 @@ export const ThemeSwitch: React.FC = (): React.ReactElement => {
 
   const toggleTheme = useCallback(() => {
     setTheme(theme === 'light' ? 'dark' : 'light');
-  }, [theme]);
+  }, [setTheme, theme]);
 
   const isDarkMode = useMemo(() => {
     return theme === 'dark';
