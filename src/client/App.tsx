@@ -1,11 +1,13 @@
-import "./App.css";
 import { io, Socket } from 'socket.io-client';
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Backdrop, Footer, Header } from './shell';
+import { Flex } from '@twilio-paste/flex';
+import { Theme } from '@twilio-paste/theme';
 
 const SOCKET_SERVER = `http://localhost:3000`;
 
 function App() {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [_, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<string>('');
   const [socketId, setSocketId] = useState<string | null>(null);
 
@@ -40,27 +42,21 @@ function App() {
     };
   }, []);
 
-  const buttonClickHandler = useCallback(() => {
-    if (socket) {
-      socket.emit(
-        'channel-join-request',
-        { 
-          user: { socketId, name: 'Pablo Deeleman' },
-        });
-    }
-  }, [socket]);
-
   return (
-    <div className="App">
-      <h1>Shoom Chat</h1>
-      <div className="card">
-        <button onClick={buttonClickHandler}>
-          Call peers
-        </button>
-        <div><pre>{messages}</pre></div>
-        <div><pre>Socket ID: {socketId}</pre></div>
-      </div>
-    </div>
+    <Theme.Provider theme='dark'>
+      <Backdrop>
+        <Flex width={'100%'} height={'100vh'} vertical>
+          <Header />
+          <Flex grow>
+            <div className="card">
+              <div><pre>{messages}</pre></div>
+              <div><pre>Socket ID: {socketId}</pre></div>
+            </div>
+          </Flex>
+          <Footer />
+        </Flex>
+      </Backdrop>
+    </Theme.Provider>
   );
 }
 
