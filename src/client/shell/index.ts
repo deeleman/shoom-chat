@@ -1,3 +1,3 @@
-export * from './Backdrop';
-export * from './Footer';
-export * from './Header';
+import Layout from './Layout';
+
+export { Layout };
