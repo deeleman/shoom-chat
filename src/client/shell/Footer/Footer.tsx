@@ -1,19 +1,21 @@
+import { Badge } from '@twilio-paste/core/Badge';
+import { Box } from '@twilio-paste/core/Box';
 import { Button } from '@twilio-paste/core/button';
 import { ButtonGroup } from '@twilio-paste/core/button-group';
-import { Badge } from '@twilio-paste/core/Badge';
-// import { ChevronDownIcon } from '@twilio-paste/icons/esm/ChevronDownIcon';
+import { Flex } from "@twilio-paste/core/flex";
+import { Menu, MenuButton, MenuItem, useMenuState } from '@twilio-paste/core/menu';
+import { ChevronDownIcon } from '@twilio-paste/icons/esm/ChevronDownIcon';
 import { MicrophoneOffIcon } from "@twilio-paste/icons/esm/MicrophoneOffIcon";
 import { MicrophoneOnIcon } from "@twilio-paste/icons/esm/MicrophoneOnIcon";
 import { VideoOffIcon } from "@twilio-paste/icons/esm/VideoOffIcon";
 import { VideoOnIcon } from "@twilio-paste/icons/esm/VideoOnIcon";
-
 import GitHubButton from "react-github-btn";
-
-import { Box } from '@twilio-paste/core/Box';
-import { Flex } from "@twilio-paste/core/flex";
 import { useCallback, useState } from 'react';
 
 export const Footer: React.FC = (): React.ReactElement => {
+  const videoOptionsMenu = useMenuState();
+  const micOptionsMenu = useMenuState();
+
   const [videoOn, setVideoOn] = useState(true);
   const [microphoneOn, setMicrophoneOn] = useState(true);
 
@@ -30,18 +32,34 @@ export const Footer: React.FC = (): React.ReactElement => {
       <Flex width={'100%'} hAlignContent={'between'} vAlignContent={'bottom'}>
         <Badge as="span" variant="neutral_counter">v1.0.0</Badge>
         <ButtonGroup attached>
-          <Button variant={videoOn ? 'inverse' : 'destructive_secondary'} onClick={toggleVideo}>
+          <Button variant={videoOn ? 'secondary' : 'destructive_secondary'} onClick={toggleVideo}>
             {videoOn
               ? (<><VideoOnIcon decorative={false} title="Video On" /> Video On</>)
               : (<><VideoOffIcon decorative={false} title="Video Off" /> Video Off</>)
             }
           </Button>
-          <Button variant={microphoneOn ? 'inverse' : 'destructive_secondary'} onClick={toggleMicrophone}>
+          <MenuButton {...videoOptionsMenu} variant="secondary">
+            <ChevronDownIcon decorative={false} title='Camera Options' />
+          </MenuButton>
+          <Menu {...videoOptionsMenu} aria-label="Camera Options">
+            <MenuItem {...videoOptionsMenu}>System camera</MenuItem>
+            <MenuItem {...videoOptionsMenu}>Display monitor camera</MenuItem>
+            <MenuItem {...videoOptionsMenu}>logi built-in camera</MenuItem>
+          </Menu>
+          <Button variant={microphoneOn ? 'secondary' : 'destructive_secondary'} onClick={toggleMicrophone}>
             {microphoneOn
               ? (<><MicrophoneOnIcon decorative={false} title="Microphone On" /> Mic On</>)
               : (<><MicrophoneOffIcon decorative={false} title="Microphone Off" /> Mic Off</>)
             }
           </Button>
+          <MenuButton {...micOptionsMenu} variant="secondary">
+            <ChevronDownIcon decorative={false} title='Microphone Options' />
+          </MenuButton>
+          <Menu {...micOptionsMenu} aria-label="Microphone Options">
+            <MenuItem {...micOptionsMenu}>System mic</MenuItem>
+            <MenuItem {...micOptionsMenu}>Display monitor mic</MenuItem>
+            <MenuItem {...micOptionsMenu}>logi built-in mic</MenuItem>
+          </Menu>
         </ButtonGroup>
         <GitHubButton
           href="https://github.com/deeleman/shoom-chat"

@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { useEffect, useState } from "react";
 import { Backdrop, Footer, Header } from './shell';
 import { Flex } from '@twilio-paste/flex';
-import { Theme } from '@twilio-paste/theme';
+import { ThemeProvider } from './providers';
 
 const SOCKET_SERVER = `http://localhost:3000`;
 
@@ -43,7 +43,7 @@ function App() {
   }, []);
 
   return (
-    <Theme.Provider theme='dark'>
+    <ThemeProvider defaultTheme='dark'>
       <Backdrop>
         <Flex width={'100%'} height={'100vh'} vertical>
           <Header />
@@ -56,7 +56,7 @@ function App() {
           <Footer />
         </Flex>
       </Backdrop>
-    </Theme.Provider>
+    </ThemeProvider>
   );
 }
 

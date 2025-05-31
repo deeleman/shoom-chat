@@ -1,14 +1,13 @@
 import { type PropsWithChildren } from "react";
-import { useTheme } from '@twilio-paste/theme';
+import { useTheme } from "../../providers";
 
 export const Backdrop: React.FC<PropsWithChildren> = ({ children }): React.ReactElement => {
-  const { colorSchemes } = useTheme();
-  const colorScheme = colorSchemes.colorScheme || 'light';
+  const { theme } = useTheme();
 
   return (
     <>
-      <div id="backdrop" className={`backdrop--${colorScheme}`}>
-        <ul className={`backdrop__circles backdrop--${colorScheme}`}>
+      <div id="backdrop" className={`backdrop--${theme}`}>
+        <ul className={`backdrop__circles backdrop__circles--${theme}`}>
           <li></li>
           <li></li>
           <li></li>
