@@ -1,4 +1,4 @@
-import { Box } from "@twilio-paste/core/Box";
+import { Box } from "@twilio-paste/core";
 import { VideoGridItem } from "./VideoGridItem";
 import { useStreamingData } from "../providers";
 import { useEffect, useRef } from "react";

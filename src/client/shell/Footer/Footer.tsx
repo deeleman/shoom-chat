@@ -1,6 +1,4 @@
-import { Badge } from '@twilio-paste/core/Badge';
-import { Box } from '@twilio-paste/core/Box';
-import { Flex } from "@twilio-paste/core/flex";
+import { Badge, Box, Flex } from '@twilio-paste/core';
 import GitHubButton from "react-github-btn";
 import { SettingsMenu } from './SettingsMenu';
 

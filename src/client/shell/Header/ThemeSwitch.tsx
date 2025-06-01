@@ -1,4 +1,4 @@
-import { Switch } from "@twilio-paste/core/Switch";
+import { Switch } from "@twilio-paste/core";
 import { DarkModeIcon } from "@twilio-paste/icons/esm/DarkModeIcon";
 import { LightModeIcon } from "@twilio-paste/icons/esm/LightModeIcon";
 import { useCallback, useMemo } from "react";

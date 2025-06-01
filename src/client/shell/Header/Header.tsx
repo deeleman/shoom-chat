@@ -1,5 +1,4 @@
-import { Heading } from "@twilio-paste/core/Heading";
-import { Flex } from "@twilio-paste/core/flex";
+import { Flex, Heading } from "@twilio-paste/core";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 export const Header: React.FC = (): React.ReactElement => {

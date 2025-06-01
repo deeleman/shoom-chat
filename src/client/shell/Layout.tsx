@@ -1,5 +1,5 @@
 import { memo, type PropsWithChildren } from "react";
-import { Flex } from '@twilio-paste/flex';
+import { Flex } from '@twilio-paste/core';
 import { Backdrop } from './Backdrop';
 import { Header } from './Header';
 import { Footer } from './Footer';

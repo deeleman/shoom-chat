@@ -1,5 +1,4 @@
-import { AspectRatio as PasteAspectRatio } from "@twilio-paste/core";
-import { Box } from "@twilio-paste/core/Box";
+import { AspectRatio as PasteAspectRatio, Box } from "@twilio-paste/core";
 import { useEffect, useRef } from "react";
 import { type AspectRatio } from "./types";
 
