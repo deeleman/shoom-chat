@@ -1,5 +1,6 @@
 // import { io, Socket } from 'socket.io-client';
-import { ThemeProvider, MediaDevicesProvider } from './providers';
+import { VideoGrid } from './main/VideoGrid';
+import { ThemeProvider, MediaDevicesProvider, UserMediaProvider } from './providers';
 import { Layout } from './shell';
 
 function App() {
@@ -41,10 +42,12 @@ function App() {
 
   return (
     <MediaDevicesProvider>
-      <ThemeProvider defaultTheme="dark">
-        <Layout>
-          <p>Video is embedded here</p>
-        </Layout>
+      <ThemeProvider defaultTheme="light">
+        <UserMediaProvider>
+          <Layout>
+            <VideoGrid />
+          </Layout>
+        </UserMediaProvider>
       </ThemeProvider>
     </MediaDevicesProvider>
   );
