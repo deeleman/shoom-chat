@@ -1,22 +1,26 @@
-/**
- * Represents a specific Room within the Shoom Chat room channels pool.
- */
-export type Room = string;
 
-/**
- * Represents a particular user metadata within a channel.
- */
-export type User = {
-  /** Unique id from `Socket` connection. */
-  socketId: string;
-  /** Full user name, for messaging purposes. */
-  name: string;
+export type UserStream = {
+  socketId: string | null;
+  fullName?: string;
+  stream: MediaStream;
+  hasCameraOn: boolean;
+  hasMicrophoneOn: boolean;
 };
 
-/**
- * Represents all users grouped by room channels in the system.
- */
-export type RoomUsers = Record<Room, User[]>
+export type StreamingContextType = {
+  socketId: string | null;
+  rooms: string[];
+  streams: MediaStream[];
+  peers: string[];
+  joinRoom: (name: string, room?: string) => void;
+  leaveRoom?: (room: string) => void;
+};
+
+export type WelcomeResponse = {
+  socketId: string;
+  rooms: string[];
+  peers: Record<string, string[]>;
+};
 
 /**
  * Web Socket events definition. Event message types must conform to

@@ -1,13 +1,18 @@
 import { Box } from "@twilio-paste/core/Box";
 import { VideoGridItem } from "./VideoGridItem";
-import { useStreams } from "../providers";
-import { useRef } from "react";
+import { useStreamingData } from "../providers";
+import { useEffect, useRef } from "react";
 import { useGrid } from "./useGrid";
 import { type AspectRatio } from "./types";
 
 export const VideoGrid: React.FC = () => {
-  const { streams } = useStreams();
+  const { joinRoom, streams } = useStreamingData();
+
   const gridContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    joinRoom('Pavel')
+  }, [joinRoom]);
 
   const ASPECT_RATIO: AspectRatio = '16:9';
 

@@ -1,1 +1,2 @@
-export * from './useUserStreams';
+export * from './StreamingProvider';
+export * from './useStreamingData';

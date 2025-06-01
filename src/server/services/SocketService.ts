@@ -1,5 +1,5 @@
 import { Server, type ServerOptions, type Socket } from "socket.io";
-import { type Room, type User, SocketEventMessage } from "./types.js";
+import { type Room, type User, SocketEvent } from "./types.js";
 import { UserService } from "./UserService.js";
 import { PUBLIC_CHANNEL } from "./constants.js";
 
@@ -22,22 +22,22 @@ export class SocketService {
     this.io.on('connection', (socket: Socket) => {
       this.submitWelcomeResponse(socket);
 
-      socket.on(SocketEventMessage.ChannelJoinRequest,
+      socket.on(SocketEvent.ChannelJoinRequest,
         (request: { user: User, room?: Room }) => this.joinRoom(socket, request.user, request.room));
 
-      socket.on(SocketEventMessage.ConnectionOfferRequest, (socketId, description) => {
-        socket.to(socketId).emit(SocketEventMessage.ConnectionOfferRequest, socket.id, description);
+      socket.on(SocketEvent.ICECandidateRequest, (socketId, signal) => {
+        socket.to(socketId).emit(SocketEvent.ICECandidateRequest, socket.id, signal);
       });
 
-      socket.on(SocketEventMessage.ConnectionOfferResponse, (socketId, description) => {
-        socket.to(socketId).emit(SocketEventMessage.ConnectionOfferResponse, description);
+      socket.on(SocketEvent.ConnectionOfferRequest, (socketId, description) => {
+        socket.to(socketId).emit(SocketEvent.ConnectionOfferRequest, socket.id, description);
       });
 
-      socket.on(SocketEventMessage.ICECandidateRequest, (socketId, signal) => {
-        socket.to(socketId).emit(SocketEventMessage.ICECandidateRequest, signal);
+      socket.on(SocketEvent.ConnectionOfferResponse, (socketId, description) => {
+        socket.to(socketId).emit(SocketEvent.ConnectionOfferResponse, socket.id, description);
       });
 
-      socket.on(SocketEventMessage.DisconnectResponse, () => {
+      socket.on(SocketEvent.DisconnectResponse, () => {
         this.userService.unRegisterUser(socket.id);
       });
     });
@@ -72,9 +72,9 @@ export class SocketService {
    * @param socket A main SocketJS object for interacting with a client.
    */
   submitWelcomeResponse(socket: Socket): void {
-    this.io.to(socket.id).emit(SocketEventMessage.WelcomeResponse, {
+    this.io.to(socket.id).emit(SocketEvent.WelcomeResponse, {
       socketId: socket.id,
-      channels: this.userService.getRooms(),
+      rooms: this.userService.getRooms(),
       peers: this.userService.getPeersByChannel(PUBLIC_CHANNEL)
     });
   }
@@ -88,9 +88,10 @@ export class SocketService {
    */
   joinRoom(socket: Socket, user: User, room = PUBLIC_CHANNEL): void {
     this.userService.registerUser(user, room);
+
     socket.join(room);
 
-    this.io.to(user.socketId).emit(SocketEventMessage.ChannelWelcomeResponse, {
+    this.io.to(user.socketId).emit(SocketEvent.ChannelJoinResponse, {
       peers: this.userService.getPeersByChannel(room),
     });
   }

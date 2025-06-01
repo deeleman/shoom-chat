@@ -76,15 +76,8 @@ export const UserMediaProvider: React.FC<PropsWithChildren> = ({
     }
   }, [stream, isMicrophoneEnabled, audioDeviceMetadata]);
 
-  const userMediaContextProps = useMemo(
-    () => ({
-      stream: stream,
-    }),
-    [stream]
-  );
-
   return (
-    <UserMediaContext.Provider value={userMediaContextProps}>
+    <UserMediaContext.Provider value={stream}>
       {children}
     </UserMediaContext.Provider>
   );
