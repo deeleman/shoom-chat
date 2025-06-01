@@ -8,18 +8,12 @@ export type UserStream = {
 };
 
 export type StreamingContextType = {
-  socketId: string | null;
-  rooms: string[];
+  socketId: string | undefined;
   streams: MediaStream[];
-  peers: string[];
-  joinRoom: (name: string, room?: string) => void;
-  leaveRoom?: (room: string) => void;
 };
 
-export type WelcomeResponse = {
-  socketId: string;
-  rooms: string[];
-  peers: Record<string, string[]>;
+export type PeersRefreshPayload = {
+  peers: string[];
 };
 
 /**
@@ -28,8 +22,8 @@ export type WelcomeResponse = {
  * followed by either `Response` for Server messages or `Request` for Client messages.
  */
 export enum SocketEvent {
-  /** Server response after connecting to server. */
-  WelcomeResponse = 'welcome-response',
+  /** Socket message to inform new users just onboarded. */
+  PeerRefresh = 'peers-refresh',
 
   /** Client request to join a specific room channel while providing additional metadata. */
   ChannelJoinRequest = 'channel-join-request',

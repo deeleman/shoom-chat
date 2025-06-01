@@ -2,106 +2,86 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildr
 import { io } from 'socket.io-client';
 import { StreamingContext } from "./StreamingContext";
 import { useUserMedia } from "../UserMediaProvider";
-import { SocketEvent, type StreamingContextType, type WelcomeResponse } from "./types";
+import { SocketEvent, type StreamingContextType, type PeersRefreshPayload } from "./types";
 
 const DEV_SOCKET_SERVER = `http://localhost:3000`;
 const SOCKET_URI = process.env.NODE_ENV === 'production' ? window.location.origin : DEV_SOCKET_SERVER;
 const socketIO = io(SOCKET_URI);
 
 export const StreamingProvider: React.FC<PropsWithChildren> = ({ children }): React.ReactElement => {
-  const localConnectionsMapRef = useRef(new Map<string, RTCPeerConnection>())
-  const remoteConnectionsMapRef = useRef(new Map<string, RTCPeerConnection>())
-
   const localStream = useUserMedia();
-  const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([]);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | undefined>(undefined);
 
-  const [socketId, setSocketId] = useState<string | null>(null);
-  const [rooms, setRooms] = useState<string[]>([]);
-  const [peers, setPeers] = useState<string[]>([]);
+  const localRTCConnectionRef = useRef<RTCPeerConnection>(null)
+  const remoteRTCConnectionRef = useRef<RTCPeerConnection>(null)
 
-  const handleWelcomeResponse = useCallback((response: WelcomeResponse) => {
+  const handlePeersRefresh = useCallback(({ peers }: PeersRefreshPayload) => {
     console.log('Connected to Socket.IO server!');
-    setSocketId(response.socketId);
-    setRooms(response.rooms);
-  }, [setSocketId, setRooms]);
 
-  const joinRoom = useCallback((name: string, room?: string) => {
-    const user = { socketId, name };
-    socketIO.emit(SocketEvent.ChannelJoinRequest, { user, room });
-  }, [socketId]);
-
-  useEffect(() => {
-    if (peers.length > 0 && localStream) {
-      const remoteStreams: MediaStream[] = [];
-
-      peers.forEach((peerSocketId) => {
-        const localConnection = new RTCPeerConnection();
-        localStream.getTracks().forEach((track) => {
-          localConnection.addTrack(track, localStream);
-        });
-
-        localConnection.onicecandidate = ({ candidate }) => {
-          if(candidate) {
-            socketIO.emit(SocketEvent.ICECandidateRequest, peerSocketId, candidate);
-          }
-        };
-
-        localConnection.ontrack = ({ streams: [stream] }) => {
-          remoteStreams.push(stream);
-        };
-
-        localConnection
-          .createOffer()
-          .then((offer: RTCSessionDescriptionInit) => localConnection.setLocalDescription(offer))
-          .then(() => {
-            socketIO.emit(SocketEvent.ConnectionOfferRequest, peerSocketId, localConnection.localDescription);
-          });
-
-        localConnectionsMapRef.current.set(peerSocketId, localConnection);
-      });
-
-      setRemoteStreams(remoteStreams);
+    if (!peers || !peers.length || !localStream) {
+      return;
     }
-  }, [localStream, peers]);
 
-  const handleOfferRequest = useCallback((peerSocketId: string, description: RTCSessionDescriptionInit) => {
-    const remoteConnection = new RTCPeerConnection();
-    localStream?.getTracks().forEach((track) => remoteConnection.addTrack(track, localStream));
+    const peerSocketId = peers[0];
+    localRTCConnectionRef.current = new RTCPeerConnection();
 
-    remoteConnection.onicecandidate = ({ candidate }) => {
+    localStream
+      .getTracks()
+      .forEach((track) => localRTCConnectionRef.current!.addTrack(track, localStream));
+
+    localRTCConnectionRef.current.onicecandidate = ({ candidate }) => {
       if (candidate) {
         socketIO.emit(SocketEvent.ICECandidateRequest, peerSocketId, candidate);
       }
     };
 
-    remoteConnection.ontrack = ({ streams: [stream] }) => {
-      setRemoteStreams((remoteStreams) => {
-        const filteredStreams = remoteStreams.filter((remoteStream) => remoteStream.id !== stream.id);
-        return [stream, ...filteredStreams];
-      });
+    localRTCConnectionRef.current.ontrack = ({ streams: [remoteMediaStream] }) => {
+      setRemoteStream(remoteMediaStream);
     };
 
-    remoteConnection
-      .setRemoteDescription(description)
-      .then(() => remoteConnection.createAnswer())
-      .then((answer: RTCSessionDescriptionInit) => remoteConnection.setLocalDescription(answer))
+    localRTCConnectionRef.current
+      .createOffer()
+      .then((offer) => localRTCConnectionRef.current!.setLocalDescription(offer))
       .then(() => {
-        socketIO.emit(SocketEvent.ConnectionOfferResponse, peerSocketId, remoteConnection.localDescription);
+        socketIO.emit(SocketEvent.ConnectionOfferRequest, peerSocketId, localRTCConnectionRef.current!.localDescription);
       });
-
-    remoteConnectionsMapRef.current.set(peerSocketId, remoteConnection);
   }, [localStream]);
 
-  const handleOfferResponse = useCallback((peerSocketId: string, description: RTCSessionDescriptionInit) => {
-    const localConnection = localConnectionsMapRef.current.get(peerSocketId);
-    if (localConnection) {
-      localConnection.setRemoteDescription(description);
+
+  const handleOfferRequest = useCallback((peerSocketId: string, description: RTCSessionDescriptionInit) => {
+    if (!localStream) return;
+
+    remoteRTCConnectionRef.current = new RTCPeerConnection();
+    localStream.getTracks().forEach((track) => remoteRTCConnectionRef.current!.addTrack(track, localStream));
+
+    remoteRTCConnectionRef.current!.onicecandidate = ({ candidate }) => {
+      if (candidate) {
+        socketIO.emit(SocketEvent.ICECandidateRequest, peerSocketId, candidate);
+      }
+    };
+
+    remoteRTCConnectionRef.current!.ontrack = ({ streams: [remoteMediaStream] }) => {
+      setRemoteStream(remoteMediaStream);
+    };
+
+    remoteRTCConnectionRef.current
+      .setRemoteDescription(description)
+      .then(() => remoteRTCConnectionRef.current!.createAnswer())
+      .then((answer: RTCSessionDescriptionInit) => remoteRTCConnectionRef.current!.setLocalDescription(answer))
+      .then(() => {
+        socketIO.emit(SocketEvent.ConnectionOfferResponse, peerSocketId, remoteRTCConnectionRef.current!.localDescription);
+      });
+  }, [localStream]);
+
+  const handleOfferResponse = useCallback((description: RTCSessionDescriptionInit) => {
+    if (localRTCConnectionRef.current) {
+      localRTCConnectionRef.current.setRemoteDescription(description);
     }
   }, []);
 
-  const handleCandidateRequest = useCallback((peerSocketId: string, candidate: RTCIceCandidateInit) => {
-    const localConnection = localConnectionsMapRef.current.get(peerSocketId);
-    const remoteConnection = remoteConnectionsMapRef.current.get(peerSocketId);
+  const handleCandidateRequest = useCallback((candidate: RTCIceCandidateInit) => {
+    const localConnection = localRTCConnectionRef.current;
+    const remoteConnection = remoteRTCConnectionRef.current;
     if (localConnection || remoteConnection) {
       const connection = localConnection || remoteConnection;
       connection?.addIceCandidate(new RTCIceCandidate(candidate));
@@ -109,8 +89,7 @@ export const StreamingProvider: React.FC<PropsWithChildren> = ({ children }): Re
   }, []);
 
   useEffect(() => {
-    socketIO.on(SocketEvent.WelcomeResponse, handleWelcomeResponse);
-    socketIO.on(SocketEvent.ChannelJoinResponse, ({ peers }) => setPeers(peers));
+    socketIO.on(SocketEvent.PeerRefresh, handlePeersRefresh);
     socketIO.on(SocketEvent.ConnectionOfferRequest, handleOfferRequest);
     socketIO.on(SocketEvent.ConnectionOfferResponse, handleOfferResponse);
     socketIO.on(SocketEvent.ICECandidateRequest, handleCandidateRequest);
@@ -119,22 +98,19 @@ export const StreamingProvider: React.FC<PropsWithChildren> = ({ children }): Re
       socketIO.removeAllListeners();
       socketIO.disconnect();
     };
-  }, [handleOfferRequest, handleOfferResponse, handleWelcomeResponse, handleCandidateRequest]);
+  }, [handleCandidateRequest, handleOfferRequest, handleOfferResponse, handlePeersRefresh]);
 
   const streamingContextValue = useMemo<StreamingContextType>(() => {
-    const streams = remoteStreams;
+    const streams = remoteStream ? [remoteStream] : [];
     if (localStream) {
       streams.push(localStream);
     }
 
     return {
-      socketId,
-      rooms,
-      peers,
-      joinRoom,
       streams,
+      socketId: socketIO.id,
     };
-  }, [socketId, rooms, peers, joinRoom, localStream, remoteStreams]);
+  }, [localStream, remoteStream]);
 
   return (
     <StreamingContext.Provider value={streamingContextValue}>

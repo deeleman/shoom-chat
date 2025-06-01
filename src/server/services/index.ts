@@ -1,3 +1,2 @@
-export * from './UserService.js';
 export * from './SocketService.js';
-export * from './types.js';
+export * from './SocketEvent.js';
