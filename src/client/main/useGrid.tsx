@@ -29,10 +29,6 @@ export function useGrid<T>(
     return () => window.removeEventListener('resize', updateSize);
   }, [gridContainerRef]);
 
-  useEffect(() => {
-    
-  }, [gridSize])
-
   const gridItemSize = useMemo<GridItemSize>(() => {
     const rows = Math.min(Math.floor(items.length / MAX_ROWS) + 1, MAX_ROWS);
     const cols = Math.ceil(items.length / rows);
