@@ -41,9 +41,11 @@ export const VideoGridItem: React.FC<VideoItemProps> = ({
           margin={'space10'}
         >
           <video
+            data-stream-id={stream?.id}
             ref={videoRef}
             playsInline
             autoPlay
+            muted
           />
         </Box>
       </PasteAspectRatio>

@@ -2,7 +2,13 @@ import { useContext } from "react"
 import { UserMediaContext } from "./UserMediaContext"
 
 export const useUserMedia = () => {
-  const contextStream = useContext(UserMediaContext);
+  const context = useContext(UserMediaContext);
 
-  return contextStream
+  if (!context) {
+    throw new Error(
+      'The useUserMedia() hook must be executed in a component inside a <UserMediaProvider> element.'
+    )
+  }
+
+  return context
 }

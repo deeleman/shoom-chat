@@ -1,4 +1,4 @@
-import { VideoGrid } from './main/VideoGrid';
+import { VideoRouter } from './main/VideoRouter';
 import { ThemeProvider, MediaDevicesProvider, UserMediaProvider, StreamingProvider } from './providers';
 import { Layout } from './shell';
 
@@ -9,7 +9,7 @@ function App() {
         <UserMediaProvider>
           <StreamingProvider>
             <Layout>
-              <VideoGrid />
+              <VideoRouter />
             </Layout>
           </StreamingProvider>
         </UserMediaProvider>

@@ -4,25 +4,18 @@
  * followed by either `Response` for Server messages or `Request` for Client messages.
  */
 export enum SocketEvent {
-  /** Socket message to inform new users just onboarded. */
-  PeerRefresh = 'peers-refresh',
-
-  /** Client request to join a specific room channel while providing additional metadata. */
-  ChannelJoinRequest = 'channel-join-request',
-
-  /** Server response with channel metadata upon receiving a join request. */
-  ChannelJoinResponse = 'channel-join-response',
+  /** Socket message to inform what users are available. */
+  PeerRefresh = 'peers-available',
 
   /** The user has been disconnected. */
   DisconnectResponse = 'disconnect',
 
   /** Client caller request to initiate a P2P connection with another user or callee. */
-  ConnectionOfferRequest = 'connection-offer',
+  ConnectionOfferRequest = 'connection-request',
 
   /** Client callee response to establish a P2P connection with a caller user. */
-  ConnectionOfferResponse = 'connection-answer',
+  ConnectionOfferReply = 'connection-reply',
 
   /** Client request that issues a Signal to establish the Communication channel */
-  ICECandidateRequest = 'ice-candidate-signaling'
-  ,
+  ICECandidateSignal = 'ice-candidate-signaling',
 }

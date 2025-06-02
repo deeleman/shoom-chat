@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { UserMediaContext } from "./UserMediaContext";
 import { useMediaDevices } from "../MediaDevicesProvider";
+import type { UserMediaData } from "./types";
 
 export const UserMediaProvider: React.FC<PropsWithChildren> = ({
   children,
 }): React.ReactElement => {
   const [stream, setStream] = useState<MediaStream>();
+  const [name, setName] = useState<string | undefined>(undefined);
   const {
     isMicrophoneEnabled,
     isVideoEnabled,
@@ -76,8 +78,14 @@ export const UserMediaProvider: React.FC<PropsWithChildren> = ({
     }
   }, [stream, isMicrophoneEnabled, audioDeviceMetadata]);
 
+  const userMediaProviderValue = useMemo<UserMediaData>(() => ({
+    stream,
+    name,
+    setName,
+  }), [name, stream])
+
   return (
-    <UserMediaContext.Provider value={stream}>
+    <UserMediaContext.Provider value={userMediaProviderValue}>
       {children}
     </UserMediaContext.Provider>
   );
