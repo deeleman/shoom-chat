@@ -19,7 +19,7 @@ export const StreamingProvider: React.FC<PropsWithChildren> = ({ children }): Re
 
     // Start a RTCPeerConnection to each client
     socketIo.on(SocketEvent.PeerRefresh, (peers) => {
-      if (!Array.isArray(peers) || peers.length <= 1) return;
+      if (!Array.isArray(peers) || !peers.length) return;
 
       const peerSocketId = peers[0];
 
